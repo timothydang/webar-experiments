@@ -1,5 +1,5 @@
 import * as THREE from "three";
-// import Stats from "three/addons/libs/stats.module.js";
+import Stats from "three/addons/libs/stats.module.js";
 import { MindARThree } from "mindar-image-three";
 import { mockWithVideo } from "./helpers/camera-mock";
 import { loadTextures } from "./helpers/loader.js";
@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const start = async () => {
     // mockWithVideo("./assets/mock-videos/mg-principle-1.mp4");
     mockWithVideo("./assets/mock-videos/mg-logos.mp4");
-    // stats = new Stats();
-    // document.body.appendChild(stats.dom);
+    stats = new Stats();
+    document.body.appendChild(stats.dom);
 
     // initialize MindAR
     const mindarThree = new MindARThree({
