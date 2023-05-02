@@ -6,12 +6,13 @@ import { loadTextures } from "./helpers/loader.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   let stats;
+  const pointer = new THREE.Vector2();
 
   const start = async () => {
     // mockWithVideo("./assets/mock-videos/mg-principle-1.mp4");
-    mockWithVideo("./assets/mock-videos/mg-logos.mp4");
+    // mockWithVideo("./assets/mock-videos/mg-logos.mp4");
     stats = new Stats();
-    document.body.appendChild(stats.dom);
+    // document.body.appendChild(stats.dom);
 
     // initialize MindAR
     const mindarThree = new MindARThree({
@@ -19,11 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
       imageTargetSrc: "./assets/targets/mg-targets.mind",
       filterMinCF: 0.0001,
       filterBeta: 0.0001,
-      missTolerance: 0,
-      warmupTolerance: 0,
+      // missTolerance: 0,
+      // warmupTolerance: 0,
       uiScanning: false,
       uiLoading: "no",
-      maxTrack: 3,
+      // maxTrack: 3,
     });
 
     const { renderer, scene, camera } = mindarThree;
@@ -57,11 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const brandLogos = ["digio-logo", "mantel-group-logo"];
 
     const textures = await loadTextures(principles.map((p) => p.url));
+    const group = new THREE.Group();
 
     for (let i = 0; i < principles.length; i++) {
-      const planeGeometry = new THREE.PlaneGeometry(1, 1);
       const plane = new THREE.Mesh(
-        planeGeometry,
+        new THREE.PlaneGeometry(1, 1),
         new THREE.MeshBasicMaterial({
           color: 0xffffff,
         })
@@ -71,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const cardMaterial = new THREE.MeshBasicMaterial({
         map: textures[i],
         transparent: true,
-        depthWrite: false,
+        // depthWrite: false,
       });
       const card = new THREE.Mesh(cardGeometry, cardMaterial);
 
@@ -81,41 +82,62 @@ document.addEventListener("DOMContentLoaded", () => {
       if (i === 2) {
         plane.rotation.z = -Math.PI / 4;
       }
-      plane.add(card);
+      // plane.add(card);
 
       plane.userData.clickable = true;
-      plane.userData.objectName = principles[i].name;
-
+      plane.userData.name = principles[i].name;
+      plane.visible = false;
+      group.add(plane);
 
       const anchor = mindarThree.addAnchor(i);
       anchor.group.add(plane);
     }
 
-    document.body.addEventListener("click", (e) => {
-      const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-      const mouse = new THREE.Vector2(mouseX, mouseY);
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-
-      if (intersects.length > 0) {
-        let o = intersects[0].object;
-        while (o.parent && !o.userData.clickable) {
-          o = o.parent;
-        }
-        if (o.userData.clickable) {
-          window.open("https://mantelgroup.com.au/our-principles/", "_blank");
-        }
-      }
-    });
-
     renderer.setAnimationLoop(() => {
       renderer.render(scene, camera);
       stats.update();
     });
+
+    const raycaster = new THREE.Raycaster();
+
+    document.body.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log(e.target);
+      console.log(scene.children);
+      // const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      // const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+      const mouse = new THREE.Vector2(pointer.x, pointer.y);
+      raycaster.setFromCamera(mouse, camera);
+      // const planes = scene.children.map(c => c.children[0]);
+      // console.log(planes);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      // console.log(intersects);
+      if (intersects.length > 0) {
+        const o = intersects[0].object;
+        // while (o.parent && !o.userData.clickable) {
+        //   o = o.parent;
+        // }
+        console.log(o);
+
+        if (o.userData?.clickable) {
+          window.open(
+            `https://mantelgroup.com.au/our-principles/#${o.userData?.name}`,
+            "_blank"
+          );
+        }
+      }
+    });
+
     await mindarThree.start();
   };
+
+  function onPointerMove(event) {
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  }
+
+  window.addEventListener("pointermove", onPointerMove);
 
   start();
 });

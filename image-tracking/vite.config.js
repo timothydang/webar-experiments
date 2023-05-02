@@ -9,7 +9,7 @@ module.exports = defineConfig({
           three: "https://unpkg.com/three@0.151.0/build/three.module.js",
           "three/addons/": "https://unpkg.com/three@0.151.0/examples/jsm/",
           "mindar-image-three":
-            "https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-three.prod.js",
+            "https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-three.prod.js",
         },
       },
     ]),
