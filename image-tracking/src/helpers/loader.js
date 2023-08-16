@@ -1,8 +1,5 @@
-// import { GLTFLoader } from "./three.js-r132/examples/jsm/loaders/GLTFLoader.js";
-// import * as THREE from "./three.js-r132/build/three.module.js";
-
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export const loadGLTF = (path) => {
   return new Promise((resolve, reject) => {
@@ -25,7 +22,6 @@ export const loadAudio = (path) => {
 export const loadVideo = (path) => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
-    // video.addEventListener('loadeddata', () => {
     video.addEventListener("loadedmetadata", () => {
       video.setAttribute("playsinline", "");
       resolve(video);
